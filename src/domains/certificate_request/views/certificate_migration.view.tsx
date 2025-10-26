@@ -1,0 +1,18 @@
+import { motion } from "framer-motion";
+import { Outlet } from "react-router-dom";
+
+const CertificateView = () => {
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="bg-white h-full relative"
+    >
+      <Outlet />
+    </motion.div>
+  );
+};
+
+export { CertificateView };
