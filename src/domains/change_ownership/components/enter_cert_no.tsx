@@ -19,7 +19,7 @@ export default function EnterCertNo() {
   };
 
   return (
-    <>
+    <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
       <div className="fixed top-10 -left-4">
         <Button
@@ -57,6 +57,7 @@ export default function EnterCertNo() {
                 <div className="mb-6">
                   <FieldInput
                     id="certificateNo"
+                    className='rounded-none'
                     type="text"
                     name="certificateNo"
                     placeholder="Enter Certificate Number"
@@ -77,6 +78,6 @@ export default function EnterCertNo() {
           )}
         </Formik>
       </section>
-    </>
+    </main>
   );
 }

@@ -19,9 +19,9 @@ export default function EnterVin() {
   };
 
   return (
-    <>
+    <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4">
+      <div className="fmax-w-[720px] mx-auto fixed top-10 -left-4">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -58,6 +58,7 @@ export default function EnterVin() {
                   <FieldInput
                     id="vin"
                     type="text"
+                    className='rounded-none'
                     name="vin"
                     placeholder="Enter Vehicle Identification Number (VIN)"
 
@@ -77,6 +78,6 @@ export default function EnterVin() {
           )}
         </Formik>
       </section>
-    </>
+    </main>
   );
 }

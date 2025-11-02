@@ -20,7 +20,7 @@ const SelectOptionView = () => {
 
   return (
     <>
-     <Button onClick={handleGoBack} variant={'icon'} className="text-white items-start -ml-4"><IoIosArrowBack size={25} /><span className="text-lg">Back</span></Button>
+      <Button onClick={handleGoBack} variant={'icon'} className="text-white max-w-[720px] mx-auto items-start -ml-4"><IoIosArrowBack size={25} /><span className="text-lg">Back</span></Button>
     <main className="items-center mx-auto flex flex-col justify-center">
      
       <div className="bg-white p-5 md:px-20 py-16">

@@ -6,11 +6,6 @@ import { MAX_FILE_SIZE, SUPPORTED_FORMATS } from "./constants";
 export const vinValidationSchema = Yup.object().shape({
   vin: Yup.string()
     .trim()
-    .matches(
-      /^[A-HJ-NPR-Z0-9]+$/,
-      "VIN must contain only letters and numbers (no I, O, or Q)"
-    )
-    .length(17, "VIN must be exactly 17 characters")
     .required("VIN is required"),
 });
 
