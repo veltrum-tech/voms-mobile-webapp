@@ -22,7 +22,7 @@ const AuthLayout = () => {
           className="w-full"
           style={{ willChange: "transform, opacity" }}
         >
-          <div className="animate-[slideIn_0.2s_ease-out_0.3s_both]">
+          <div className="animate-[slideIn_0.2s_ease-out_0.3s_both] p-4">
             <Outlet />
           </div>
         </motion.div>
