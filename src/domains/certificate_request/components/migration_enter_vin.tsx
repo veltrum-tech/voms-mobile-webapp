@@ -19,9 +19,9 @@ export default function EnterVin() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto">
+    <main className="max-w-[720px] mx-auto h-full">
       {/* Back Button */}
-      <div className="fmax-w-[720px] mx-auto fixed top-10 -left-4">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -32,14 +32,14 @@ export default function EnterVin() {
         </Button>
       </div>
 
-      <section className="flex flex-col min-h-full justify-between">
+      <section className="flex bg-white p-4 h-full flex-col min-h-full justify-between">
         <Formik
           initialValues={{ vin: "" }}
           validationSchema={vinValidationSchema}
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
-            <Form className="flex flex-col min-h-full justify-between">
+            <Form className="flex flex-col min-h-auto justify-between">
               <div>
                 <div className="flex items-center gap-3 mt-6 mb-3">
                   <div className="bg-[#8D8989] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">

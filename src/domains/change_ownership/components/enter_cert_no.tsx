@@ -19,9 +19,9 @@ export default function EnterCertNo() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto">
+    <main className="max-w-[720px] mx-auto h-full">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -32,7 +32,7 @@ export default function EnterCertNo() {
         </Button>
       </div>
 
-      <section className="flex flex-col min-h-full justify-between">
+      <section className="bg-white p-4 flex flex-col min-h-full justify-between">
         <Formik
           initialValues={{  certificateNo: "" }}
           validationSchema={certificateValidationSchema}
