@@ -32,7 +32,7 @@ export default function UploadDocument() {
   return (
     <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4 z-10 max-w-[720px] mx-auto ">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant="icon"
@@ -43,7 +43,7 @@ export default function UploadDocument() {
         </Button>
       </div>
 
-      <section className="flex h-screen px-4 pb-20 md:pb-0">
+      <section className="flex bg-white h-screen px-4 pb-20 md:pb-0">
         <Formik
           initialValues={initialValues}
           validationSchema={documentUploadSchema}
@@ -54,7 +54,7 @@ export default function UploadDocument() {
               {/* Top content */}
               <div>
                 {/* Header */}
-                <div className="flex items-center gap-3 mt-6 mb-3">
+                <div className="space-y-6sm:flex items-center gap-3 mt-6 mb-3">
                   <div className="bg-[#8D8989] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
                     5
                   </div>

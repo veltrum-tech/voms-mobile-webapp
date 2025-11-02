@@ -55,9 +55,9 @@ export default function AdditionalInformation() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto">
+    <main className="max-w-[720px] mx-auto h-full">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -68,7 +68,7 @@ export default function AdditionalInformation() {
         </Button>
       </div>
 
-      <section className="flex flex-col justify-between overflow-y-auto no-scrollbar">
+      <section className="flex bg-white p-4 flex-col h-full justify-between overflow-y-auto no-scrollbar">
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
@@ -77,6 +77,7 @@ export default function AdditionalInformation() {
             console.log("Validating form values:", values);
             return {};
           }}
+
         >
           {({
             isSubmitting,
@@ -97,7 +98,7 @@ export default function AdditionalInformation() {
           }) => {
             console.log("Form state:", { isSubmitting, isValid, errors, touched });
             return (
-              <Form className="flex flex-col min-h-full justify-between">
+              <Form className="flex flex-col justify-between ">
                 <div>
                   {/* Header */}
                   <div className="flex items-center gap-3 mt-6 mb-3">

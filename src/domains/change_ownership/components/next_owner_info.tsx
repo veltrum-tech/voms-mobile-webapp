@@ -33,9 +33,9 @@ export default function NextOwnerInformation() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto">
+    <main className="max-w-[720px] mx-auto h-full">
       {/* Back Button */}
-      <div className=" fixed top-10 -left-4">
+      <div className=" ">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -46,7 +46,7 @@ export default function NextOwnerInformation() {
         </Button>
       </div>
 
-      <section className="flex flex-col min-h-full justify-between">
+      <section className="flex bg-white p-4 flex-col min-h-full justify-between">
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}

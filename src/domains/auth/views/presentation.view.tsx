@@ -6,7 +6,7 @@ export default function PresentationView() {
 
   return (
     <div>
-      <main className="h-full flex container mx-auto flex-col">
+      <main className="max-w-[720px] h-full flex container mx-auto flex-col">
         <section className="h-full flex flex-col justify-center text-white">
           <div className="flex text-center items-center">
             <TypographyH2 className="text-white ">
