@@ -55,7 +55,7 @@ export default function AdditionalInformation() {
   };
 
   return (
-    <>
+    <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
       <div className="fixed top-10 -left-4">
         <Button
@@ -68,7 +68,7 @@ export default function AdditionalInformation() {
         </Button>
       </div>
 
-      <section className="flex flex-col min-h-full justify-between">
+      <section className="flex flex-col justify-between overflow-y-auto no-scrollbar">
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
@@ -293,6 +293,6 @@ export default function AdditionalInformation() {
           }}
         </Formik>
       </section>
-    </>
+    </main>
   );
 }

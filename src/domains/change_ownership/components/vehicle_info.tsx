@@ -37,7 +37,7 @@ export default function VehicleInformation() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="max-w-[720px] mx-auto flex flex-col h-full">
       {/* Back Button */}
       <div className="fixed top-10 -left-4 z-50">
         <Button 

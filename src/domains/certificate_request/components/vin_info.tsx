@@ -37,9 +37,9 @@ export default function VinInformation() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col max-w-[720px] mx-auto">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4 z-50">
+      <div className="max-w-[720px] mx-auto fixed top-10 -left-4 z-50">
         <Button 
           onClick={handleGoBack} 
           variant={"icon"} 

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, TypographyH5, TypographyP, TypographySmall} from "../../../shared/components";
+import { Button, TypographyH5, TypographyP, TypographySmall } from "../../../shared/components";
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,12 +37,12 @@ export default function ReviewInformation() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="max-w-[720px] mx-auto flex flex-col space-y-6">
       {/* Back Button */}
       <div className="fixed top-10 -left-4 z-50">
-        <Button 
-          onClick={handleGoBack} 
-          variant={"icon"} 
+        <Button
+          onClick={handleGoBack}
+          variant={"icon"}
           className="text-white flex items-center gap-2"
         >
           <IoIosArrowBack size={25} />
@@ -63,7 +63,7 @@ export default function ReviewInformation() {
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-2 gap-6">
           {/* Vehicle Information Column */}
           <div>
             <TypographyP className="font-semibold text-sm text-black mb-4 uppercase">Vehicle Information</TypographyP>
@@ -144,7 +144,7 @@ export default function ReviewInformation() {
                 </svg>
               )}
             </button>
-            <label 
+            <label
               onClick={() => handleCheckboxChange("correctVehicle")}
               className="text-sm text-gray-900 cursor-pointer"
             >
@@ -155,8 +155,8 @@ export default function ReviewInformation() {
       </div>
 
       {/* Continue Button */}
-      <div className="shrink-0 pb-6 pt-6">
-        <Button 
+      <div className="">
+        <Button
           onClick={handleContinue}
           className="text-white w-full md:w-xl rounded-sm transition"
           disabled={!checkboxes.correctVehicle}

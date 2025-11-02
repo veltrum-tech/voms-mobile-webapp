@@ -34,9 +34,9 @@ export default function InformationSummary() {
   };
 
   return (
-    <div className="flex flex-col min-h-full">
+    <div className="max-w-[720px] mx-auto flex flex-col min-h-full">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4 z-50">
+      <div className="max-w-[720px] mx-auto fixed top-10 -left-4 z-50">
         <Button
           onClick={handleGoBack}
           variant="icon"

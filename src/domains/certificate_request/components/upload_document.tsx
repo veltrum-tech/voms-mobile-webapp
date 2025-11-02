@@ -21,7 +21,7 @@ export default function UploadDocument() {
   const navigate = useNavigate();
 
   const handleGoBack = () =>
-    navigate("/app/certificate-request/upload-documents");
+    navigate("/app/certificate-request/addtional-information");
 
   const handleSubmit = (values: DocumentUpload) => {
     toast.success("Document uploaded successfully!");
@@ -30,9 +30,9 @@ export default function UploadDocument() {
   };
 
   return (
-    <>
+    <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4 z-10">
+      <div className="fixed top-10 -left-4 z-10 max-w-[720px] mx-auto ">
         <Button
           onClick={handleGoBack}
           variant="icon"
@@ -100,6 +100,6 @@ export default function UploadDocument() {
           )}
         </Formik>
       </section>
-    </>
+    </main>
   );
 }

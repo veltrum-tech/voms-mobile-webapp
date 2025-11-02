@@ -33,9 +33,9 @@ export default function NextOwnerInformation() {
   };
 
   return (
-    <>
+    <main className="max-w-[720px] mx-auto">
       {/* Back Button */}
-      <div className="fixed top-10 -left-4">
+      <div className=" fixed top-10 -left-4">
         <Button
           onClick={handleGoBack}
           variant={"icon"}
@@ -72,24 +72,28 @@ export default function NextOwnerInformation() {
                 </TypographySmall>
 
                 {/* Inputs Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-6">
                   {/* Text Inputs */}
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-4">
                     <FieldInput
+                      className="rounded-none"
                       name="ownerName"
                       placeholder="Enter Name of Owner"
                     />
                     <FieldInput
+                      className="rounded-none"
                       name="ownerAddress"
                       placeholder="Enter Owner Address"
                     />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-4">
                     <FieldInput
+                      className="rounded-none"
                       name="phone"
                       placeholder="Enter Telephone No."
                     />
                     <FieldInput
+                      className="rounded-none"
                       name="email"
                       placeholder="Enter Email"
                       type="email"
@@ -112,6 +116,6 @@ export default function NextOwnerInformation() {
           )}
         </Formik>
       </section>
-    </>
+    </main>
   );
 }
