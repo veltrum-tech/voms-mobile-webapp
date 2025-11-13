@@ -4,18 +4,73 @@ import { IoIosArrowBack } from "react-icons/io";
 import { toast } from "sonner";
 import { Formik, Form } from "formik";
 import { vinValidationSchema, type VinValidation } from "../../../shared/utils";
+import { useVerifyVinMutation } from "../api";
 
 export default function EnterVin() {
   const navigate = useNavigate();
+  const [verifyVin, { isLoading }] = useVerifyVinMutation();
 
   const handleGoBack = () => {
     navigate("/select-option");
   };
 
-  const handleSubmit = (values: VinValidation) => {
-    toast.success("VIN validated successfully!");
-    console.log("Submitted VIN:", values.vin);
-    navigate("/app/certificate-request/vin-information");
+  const handleSubmit = async (values: VinValidation) => {
+    try {
+      console.log("Submitting VIN:", values.vin);
+      const result = await verifyVin({ vin: values.vin }).unwrap();
+
+      console.log("API Response:", result);
+
+      // Handle different response structures
+      if (result?.success || result?.data) {
+        toast.success("VIN validated successfully!");
+        navigate("/app/certificate-request/vin-information", {
+          state: {
+            vin: values.vin,
+            vehicleInfo: result.data?.vehicleInfo || result.data
+          }
+        });
+      } else {
+        toast.error(result?.message || "VIN validation failed");
+      }
+    } catch (error: any) {
+      console.error("VIN verification error:", error);
+      console.error("Error details:", {
+        status: error?.status,
+        data: error?.data,
+        message: error?.message
+      });
+
+      // Show more specific error messages
+      if (error?.status === 404) {
+        toast.error("VIN not found in the system");
+      } else if (error?.status === 400) {
+        toast.error(error?.data?.message || "Invalid VIN format");
+      } else if (error?.status === 500) {
+        toast.error("Server error. Please try again later.");
+      } else if (error?.status === 'FETCH_ERROR' || !navigator.onLine) {
+        toast.error("Network error. Please check your connection.");
+      } else {
+        toast.error(error?.data?.message || "Failed to verify VIN. Please try again.");
+      }
+
+      // For development: Allow proceeding even if API fails (comment this out in production)
+      // Uncomment the lines below to test without backend
+      /*
+      console.log("Proceeding with mock data for testing...");
+      toast.info("Using test data (API unavailable)");
+      navigate("/app/certificate-request/vin-information", {
+        state: {
+          vin: values.vin,
+          vehicleInfo: {
+            make: "Toyota",
+            model: "Camry",
+            year: "2020"
+          }
+        }
+      });
+      */
+    }
   };
 
   return (
@@ -68,10 +123,10 @@ export default function EnterVin() {
               <div className="flex">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                   className="text-white w-full md:w-xl rounded-sm transition"
                 >
-                  {isSubmitting ? "Validating..." : "Validate VIN"}
+                  {isSubmitting || isLoading ? "Validating..." : "Validate VIN"}
                 </Button>
               </div>
             </Form>

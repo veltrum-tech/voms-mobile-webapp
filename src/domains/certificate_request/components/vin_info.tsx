@@ -3,12 +3,11 @@ import { Button, TypographyH5 } from "../../../shared/components";
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from "react";
 import { toast } from "sonner";
-import { vehicleData } from "../data";
 
 export default function VinInformation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { vin } = location.state || {};
+  const { vin, vehicleInfo } = location.state || {};
 
   const [checkboxes, setCheckboxes] = useState({
     correctVehicle: false,
@@ -32,7 +31,9 @@ export default function VinInformation() {
       return;
     }
     // Navigate to next step
-    navigate("/app/certificate-request/addtional-information", { state: { vin } });
+    navigate("/app/certificate-request/addtional-information", {
+      state: { vin, vehicleInfo }
+    });
     toast.success("Information confirmed!");
   };
 
@@ -67,23 +68,23 @@ export default function VinInformation() {
           <div className="space-y-2 mb-8">
             <p className="text-gray-700">
               <span className="font-medium">VIN - </span>
-              {vehicleData.vin}
+              {vin || 'N/A'}
             </p>
             <p className="text-gray-700">
               <span className="font-medium">Year - </span>
-              {vehicleData.year}
+              {vehicleInfo?.year || 'N/A'}
             </p>
             <p className="text-gray-700">
               <span className="font-medium">Make - </span>
-              {vehicleData.make}
+              {vehicleInfo?.make || 'N/A'}
             </p>
             <p className="text-gray-700">
               <span className="font-medium">Model - </span>
-              {vehicleData.model}
+              {vehicleInfo?.model || 'N/A'}
             </p>
             <p className="text-gray-700">
               <span className="font-medium">Type - </span>
-              {vehicleData.type}
+              {vehicleInfo?.type || 'N/A'}
             </p>
           </div>
 

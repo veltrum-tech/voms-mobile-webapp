@@ -1,0 +1,1 @@
+export const baseUrl = 'https://voms-backend-1.onrender.com/api/v1/';

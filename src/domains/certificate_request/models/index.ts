@@ -37,3 +37,34 @@ export type {
   ExportCertificatesResponse,
   DownloadCertificateResponse,
 } from "./models";
+
+// Public Services API Models
+export type {
+  // Migration endpoints
+  VerifyVinRequest,
+  VerifyVinResponse,
+  SubmitMigrationInfoRequest,
+  SubmitMigrationInfoResponse,
+  UploadCertificateResponse,
+  InitiatePaymentRequest,
+  InitiatePaymentResponse,
+  
+  // Transfer (Change of Ownership) endpoints
+  VerifyCertificateRequest,
+  VerifyCertificateResponse,
+  SendOtpRequest,
+  SendOtpResponse,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
+  SubmitTransferRequest,
+  SubmitTransferResponse,
+  
+  // Request status
+  GetRequestStatusResponse,
+  
+  // Common types
+  RequestType,
+  RequestStatus,
+  PaymentStatus,
+  OtpMethod,
+} from "./api.models";

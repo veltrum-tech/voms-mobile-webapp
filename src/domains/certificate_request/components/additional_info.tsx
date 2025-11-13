@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   TypographyH5,
@@ -8,6 +8,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { additionalInfoSchema, type AdditionalInfo } from "../../../shared/utils";
+import { useSubmitMigrationInfoMutation } from "../api";
+import { useState } from "react";
 
 // Form values interface for handling string dates
 interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
@@ -16,28 +18,65 @@ interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
 
 export default function AdditionalInformation() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { vin, vehicleInfo } = location.state || {};
+
+  const [submitMigrationInfo, { isLoading: isSubmittingInfo }] = useSubmitMigrationInfoMutation();
+  const [requestId, setRequestId] = useState<string>('');
 
   const handleGoBack = () =>
     navigate("/app/certificate-request/vin-information");
 
-  const handleSubmit = (values: AdditionalInfoForm) => {
+  const handleSubmit = async (values: AdditionalInfoForm) => {
     try {
-      // Convert date string to Date object if needed
-      const submissionValues: AdditionalInfo = {
-        ...values,
-        issuedDate: new Date(values.issuedDate)
-      };
+      // Generate a temporary request ID if we don't have one
+      // In a real app, this would come from the VIN verification step
+      const tempRequestId = requestId || `req-${Date.now()}`;
 
-      toast.success("Information saved successfully!");
-      console.log("Submitted Values:", submissionValues);
-      navigate("/app/certificate-request/upload-documents");
-    } catch (error) {
+      const result = await submitMigrationInfo({
+        requestId: tempRequestId,
+        data: {
+          request_id: tempRequestId,
+          state: values.state,
+          lga_id: values.lga, // This should be mapped to actual LGA ID
+          certificate_number: values.certificateNo,
+          issue_date: values.issuedDate,
+          plate_number: values.plateNo,
+          purpose: values.purpose,
+          owner_name: values.ownerName,
+          owner_address: values.ownerAddress,
+          engine_number: values.engineNo,
+          title: values.title,
+          telephone: values.phone,
+          email: values.email,
+        },
+      }).unwrap();
+
+      if (result.success) {
+        toast.success("Information saved successfully!");
+        console.log("Submitted Values:", result);
+
+        // Store request ID for next steps
+        if (result.data?.request_id) {
+          setRequestId(result.data.request_id);
+        }
+
+        navigate("/app/certificate-request/upload-documents", {
+          state: {
+            requestId: result.data?.request_id || tempRequestId,
+            vin,
+            vehicleInfo,
+            additionalInfo: values
+          }
+        });
+      } else {
+        toast.error(result.message || "Failed to save information");
+      }
+    } catch (error: any) {
       console.error("Submission error:", error);
-      toast.error("Failed to save information. Please try again.");
+      toast.error(error?.data?.message || "Failed to save information. Please try again.");
     }
-  };
-
-  const initialValues: AdditionalInfoForm = {
+  }; const initialValues: AdditionalInfoForm = {
     state: "",
     lga: "",
     certificateNo: "",
@@ -280,13 +319,13 @@ export default function AdditionalInformation() {
                 <div className="flex mt-10">
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isSubmittingInfo}
                     className="w-full mb-4 md:w-xl rounded-sm"
                     onClick={() => {
                       console.log("Submit button clicked!", { isSubmitting, isValid, errors });
                     }}
                   >
-                    {isSubmitting ? "Saving..." : "Continue"}
+                    {isSubmitting || isSubmittingInfo ? "Saving..." : "Continue"}
                   </Button>
                 </div>
               </Form>
