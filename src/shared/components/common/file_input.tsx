@@ -195,9 +195,6 @@ export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "p
     fileInputRef.current?.click()
   }
 
-  // const openCaptureDialog = () => {
-  //   captureInputRef.current?.click()
-  // }
 
   return (
     <div className="w-full">
@@ -235,9 +232,6 @@ export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "p
             accept={allowedFormats.map((format) => `.${format}`).join(",")}
           />
         </div>
-
-        {/* OR Divider */}
-        <div className="text-gray-500 ml-3 font-medium">OR</div>
 
         {/* Capture Section */}
         {/* <div className="flex-1 w-full flex justify-center">

@@ -100,12 +100,12 @@ export default function UploadDocument() {
                     5
                   </div>
                   <TypographyH5 className="text-lg md:text-xl font-semibold text-gray-900">
-                    UPLOAD SUPPORTING DOCUMENT
+                    UPLOAD CERTIFICATE OF OWNERSHIP
                   </TypographyH5>
                 </div>
 
                 <TypographySmall className="text-gray-600 text-sm mb-8">
-                  Please upload your supporting document
+                  Please upload your current certificate of ownership
                 </TypographySmall>
 
                 {/* File Upload */}
