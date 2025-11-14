@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
-  // FileUpload,
   TypographyH5,
   TypographySmall,
 } from "../../../shared/components";
+import { FileUpload } from "../../../shared/components/common/file_input";
 import { IoIosArrowBack } from "react-icons/io";
 import { toast } from "sonner";
 import { Formik, Form } from "formik";
@@ -90,9 +90,7 @@ export default function UploadDocument() {
           validationSchema={documentUploadSchema}
           onSubmit={handleSubmit}
         >
-          {({ errors, touched, isSubmitting,
-            // setFieldValue
-          }) => (
+          {({ errors, touched, isSubmitting, setFieldValue }) => (
             <Form className="flex flex-col">
               {/* Top content */}
               <div>
@@ -110,13 +108,13 @@ export default function UploadDocument() {
                   Please upload your supporting document
                 </TypographySmall>
 
-                {/* File Upload
+                {/* File Upload */}
                 <FileUpload
                   onFileSelected={(file) =>
                     setFieldValue("supportingDocument", file)
                   }
-                  allowedFormats={["jpg", "jpeg", "png"]}
-                /> */}
+                  allowedFormats={["jpg", "jpeg", "png", "pdf"]}
+                />
 
                 {/* Error Message */}
                 {errors.supportingDocument && touched.supportingDocument && (
