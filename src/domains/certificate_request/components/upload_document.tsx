@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
-  FileUpload,
+  // FileUpload,
   TypographyH5,
   TypographySmall,
 } from "../../../shared/components";
@@ -90,7 +90,9 @@ export default function UploadDocument() {
           validationSchema={documentUploadSchema}
           onSubmit={handleSubmit}
         >
-          {({ errors, touched, isSubmitting, setFieldValue }) => (
+          {({ errors, touched, isSubmitting,
+            // setFieldValue
+          }) => (
             <Form className="flex flex-col">
               {/* Top content */}
               <div>
@@ -105,17 +107,16 @@ export default function UploadDocument() {
                 </div>
 
                 <TypographySmall className="text-gray-600 text-sm mb-8">
-                  Please upload your supporting document or capture it using
-                  your device's camera.
+                  Please upload your supporting document
                 </TypographySmall>
 
-                {/* File Upload */}
+                {/* File Upload
                 <FileUpload
                   onFileSelected={(file) =>
                     setFieldValue("supportingDocument", file)
                   }
                   allowedFormats={["jpg", "jpeg", "png"]}
-                />
+                /> */}
 
                 {/* Error Message */}
                 {errors.supportingDocument && touched.supportingDocument && (
