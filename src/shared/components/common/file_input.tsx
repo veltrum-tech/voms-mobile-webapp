@@ -157,7 +157,7 @@
 
 
 import { useState, useRef, type ChangeEvent } from "react"
-import { Upload, Camera } from "lucide-react"
+import { Upload } from "lucide-react"
 import { Button } from "./button"
 
 interface FileUploadProps {
@@ -167,7 +167,7 @@ interface FileUploadProps {
 
 export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "png", "pdf"] }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const captureInputRef = useRef<HTMLInputElement>(null)
+  // const captureInputRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -195,9 +195,9 @@ export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "p
     fileInputRef.current?.click()
   }
 
-  const openCaptureDialog = () => {
-    captureInputRef.current?.click()
-  }
+  // const openCaptureDialog = () => {
+  //   captureInputRef.current?.click()
+  // }
 
   return (
     <div className="w-full">
@@ -240,7 +240,7 @@ export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "p
         <div className="text-gray-500 ml-3 font-medium">OR</div>
 
         {/* Capture Section */}
-        <div className="flex-1 w-full flex justify-center">
+        {/* <div className="flex-1 w-full flex justify-center">
           <button type="button" onClick={openCaptureDialog} className="flex flex-col items-center gap-2 p-4">
             <div className="w-16 h-16 bg-[#C2185B] rounded-full flex items-center justify-center hover:bg-[#A01548] transition-colors">
               <Camera className="w-8 h-8 text-white" />
@@ -255,7 +255,7 @@ export function FileUpload({ onFileSelected, allowedFormats = ["jpg", "jpeg", "p
             capture="environment"
             onChange={handleFileChange}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Selected File Display */}
