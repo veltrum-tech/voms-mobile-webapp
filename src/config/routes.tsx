@@ -13,6 +13,7 @@ import VinInformation from "../domains/certificate_request/components/vin_info";
 import AdditionalInformation from "../domains/certificate_request/components/additional_info";
 import UploadDocument from "../domains/certificate_request/components/upload_document";
 import InformationSummary from "../domains/certificate_request/components/info_summary";
+import PaymentCallback from "../domains/certificate_request/components/payment_callback";
 import { ChangeOwnershipView } from "../domains/change_ownership/views/change_ownership.view";
 import EnterCertNo from "../domains/change_ownership/components/enter_cert_no";
 import VehicleInformation from "../domains/change_ownership/components/vehicle_info";
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
       { path: "select-option", element: <SelectOptionView /> },
     ],
   },
-
+  {
+    path: "/payment/callback",
+    element: <PaymentCallback />,
+    errorElement: <ErrorFallback />,
+  },
   {
     path: "/app",
     element: (
@@ -58,7 +63,7 @@ const router = createBrowserRouter([
           { path: "enter-cert-no", element: <EnterCertNo /> },
           { path: "vehicle-information", element: <VehicleInformation /> },
           { path: "next-owner-info", element: <NextOwnerInformation /> },
-          {path: "review-information", element: <ReviewInformation /> },
+          { path: "review-information", element: <ReviewInformation /> },
         ],
       },
     ],

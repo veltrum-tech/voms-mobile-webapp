@@ -46,13 +46,11 @@ export default function InformationSummary() {
         },
       }).unwrap();
 
-      if (result.success && result.data?.payment_url) {
+      if (result.success === true) {
         toast.success("Redirecting to payment...");
         // Redirect to payment gateway
-        window.location.href = result.data.payment_url;
-      } else {
-        toast.error(result.message || "Failed to initiate payment");
-      }
+        window.location.href = result.paymentUrl;
+      } 
     } catch (error: any) {
       console.error("Payment error:", error);
       toast.error(error?.data?.message || "Failed to initiate payment. Please try again.");
@@ -62,7 +60,7 @@ export default function InformationSummary() {
   return (
     <div className="max-w-[720px] mx-auto flex flex-col min-h-full">
       {/* Back Button */}
-      <div className="max-w-[720px] mx-auto fixed top-10 -left-4 z-50">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant="icon"
@@ -73,7 +71,7 @@ export default function InformationSummary() {
         </Button>
       </div>
 
-      <section className="grow">
+      <section className="grow bg-white p-4 pt-20 md:pt-24 flex flex-col">
         {/* Page Header */}
         <div className="flex items-center my-6 gap-3">
           <div className="bg-[#8D8989] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">

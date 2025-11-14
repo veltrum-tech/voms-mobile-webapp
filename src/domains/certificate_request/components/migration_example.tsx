@@ -97,10 +97,10 @@ export const CertificateMigrationExample = () => {
                 },
             }).unwrap();
 
-            if (result.success && result.data?.payment_url) {
+            if (result.success && result.paymentUrl) {
                 toast.success('Redirecting to payment...');
                 // Redirect to payment gateway
-                window.location.href = result.data.payment_url;
+                window.location.href = result.paymentUrl;
             }
         } catch (error) {
             toast.error('Failed to initiate payment');

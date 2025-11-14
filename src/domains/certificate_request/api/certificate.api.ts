@@ -22,6 +22,7 @@ import type {
   // Request status
   GetRequestStatusResponse,
 } from "../models";
+import type { GetLGAsResponse, GetStatesResponse, VerifyPaymentResponse } from "../models/api.models";
 
 const certificateApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -96,6 +97,24 @@ const certificateApi = api.injectEndpoints({
         method: 'GET',
       }),
     }),
+    verifyPayment: build.query<VerifyPaymentResponse, string>({
+      query: (requestId) => ({
+        url: `/public-services/request/${requestId}/verify-payment`,
+        method: 'POST',
+      }),
+    }),
+    getStates: build.query<GetStatesResponse, void>({
+      query: () => ({
+        url: '/lgas/states',
+        method: 'GET',
+      }),
+    }),
+    getLGAs: build.query<GetLGAsResponse, string | void>({
+      query: (stateId) => ({
+        url: stateId ? `/lgas?state=${stateId}` : '/lgas',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -116,4 +135,13 @@ export const {
   // Request status
   useGetRequestStatusQuery,
   useLazyGetRequestStatusQuery,
+  
+  // Payment verification
+  useVerifyPaymentQuery,
+  useLazyVerifyPaymentQuery,
+  
+  // LGA and State endpoints
+  useGetStatesQuery,
+  useGetLGAsQuery,
+  useLazyGetLGAsQuery,
 } = certificateApi;

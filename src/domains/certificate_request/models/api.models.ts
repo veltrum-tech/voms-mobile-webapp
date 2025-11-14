@@ -64,13 +64,11 @@ export interface InitiatePaymentRequest {
 }
 
 export interface InitiatePaymentResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    payment_url: string;
-    reference: string;
-    amount: number;
-  };
+   success: boolean
+  requestId: string
+  paymentUrl: string
+  reference: string
+  amount: number
 }
 
 // ============================================
@@ -83,19 +81,24 @@ export interface VerifyCertificateRequest {
 }
 
 export interface VerifyCertificateResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    certificate_number: string;
-    isValid: boolean;
-    vehicleInfo?: {
-      make?: string;
-      model?: string;
-      year?: string;
-      owner_name?: string;
-      plate_number?: string;
-    };
-  };
+  success: boolean
+  requestId: string
+  currentOwner: CurrentOwner
+  vehicleInfo: VehicleInfo
+}
+
+export interface CurrentOwner {
+  name: string
+  phone: string
+  email: string
+}
+
+export interface VehicleInfo {
+  make: string
+  model: string
+  year: number
+  color: string
+  plate_number: string
 }
 
 // Send OTP Request/Response
@@ -162,6 +165,49 @@ export interface GetRequestStatusResponse {
     payment_status?: 'pending' | 'paid' | 'failed';
     certificate_url?: string;
   };
+}
+
+// ============================================
+// PAYMENT VERIFICATION ENDPOINT MODEL
+// ============================================
+
+export interface VerifyPaymentResponse {
+  success: boolean
+  message: string
+  paymentStatus: string
+  requestStatus: string
+}
+
+// ============================================
+// LGA AND STATE ENDPOINTS MODELS
+// ============================================
+
+export interface State {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface LGA {
+  id: string;
+  name: string;
+  state_id: string;
+  state?: State;
+  supervisor?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+export interface GetStatesResponse {
+  states: State[];
+}
+
+export interface GetLGAsResponse {
+  lgas: LGA[];
+  total?: number;
 }
 
 // ============================================

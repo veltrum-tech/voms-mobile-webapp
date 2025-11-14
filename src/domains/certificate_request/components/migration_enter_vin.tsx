@@ -27,7 +27,8 @@ export default function EnterVin() {
         navigate("/app/certificate-request/vin-information", {
           state: {
             vin: values.vin,
-            vehicleInfo: result.data?.vehicleInfo || result.data
+            vehicleInfo: result.data?.vehicleInfo || result.data,
+            fullResponse: result
           }
         });
       } else {

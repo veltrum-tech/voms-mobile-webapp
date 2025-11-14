@@ -20,17 +20,18 @@ export default function EnterCertNo() {
         certificate_number: values.certificateNo
       }).unwrap();
 
-      if (result.success) {
+      if (result.success === true) {
         toast.success("Certificate validated successfully!");
-        console.log("Certificate verified:", result.data);
+        console.log("Certificate verified:", result);
         navigate("/app/change-ownership/vehicle-information", {
           state: {
             certificateNo: values.certificateNo,
-            vehicleInfo: result.data?.vehicleInfo
+            requestId: result.requestId,
+            currentOwner: result.currentOwner,
+            vehicleInfo: result.vehicleInfo,
+            fullResponse: result
           }
         });
-      } else {
-        toast.error(result.message || "Certificate validation failed");
       }
     } catch (error: any) {
       console.error("Certificate verification error:", error);

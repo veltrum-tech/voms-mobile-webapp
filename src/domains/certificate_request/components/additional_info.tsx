@@ -9,7 +9,7 @@ import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { additionalInfoSchema, type AdditionalInfo } from "../../../shared/utils";
 import { useSubmitMigrationInfoMutation } from "../api";
-import { useState } from "react";
+import { lgas } from "../data";
 
 // Form values interface for handling string dates
 interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
@@ -19,24 +19,19 @@ interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
 export default function AdditionalInformation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { vin, vehicleInfo } = location.state || {};
+  const { vin, vehicleInfo, requestId } = location.state || {};
 
   const [submitMigrationInfo, { isLoading: isSubmittingInfo }] = useSubmitMigrationInfoMutation();
-  const [requestId, setRequestId] = useState<string>('');
 
   const handleGoBack = () =>
     navigate("/app/certificate-request/vin-information");
 
   const handleSubmit = async (values: AdditionalInfoForm) => {
     try {
-      // Generate a temporary request ID if we don't have one
-      // In a real app, this would come from the VIN verification step
-      const tempRequestId = requestId || `req-${Date.now()}`;
-
       const result = await submitMigrationInfo({
-        requestId: tempRequestId,
+        requestId: requestId,
         data: {
-          request_id: tempRequestId,
+          request_id: requestId,
           state: values.state,
           lga_id: values.lga, // This should be mapped to actual LGA ID
           certificate_number: values.certificateNo,
@@ -55,18 +50,15 @@ export default function AdditionalInformation() {
       if (result.success) {
         toast.success("Information saved successfully!");
         console.log("Submitted Values:", result);
-
-        // Store request ID for next steps
-        if (result.data?.request_id) {
-          setRequestId(result.data.request_id);
-        }
+        console.log("Full API Response:", result);
 
         navigate("/app/certificate-request/upload-documents", {
           state: {
-            requestId: result.data?.request_id || tempRequestId,
+            requestId: requestId, // Use the original requestId, not from response
             vin,
             vehicleInfo,
-            additionalInfo: values
+            additionalInfo: values,
+            submissionResponse: result // Pass the full response for reference
           }
         });
       } else {
@@ -94,7 +86,7 @@ export default function AdditionalInformation() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto h-full">
+    <main className="max-w-[720px] mx-auto h-screen">
       {/* Back Button */}
       <div className="">
         <Button
@@ -107,7 +99,7 @@ export default function AdditionalInformation() {
         </Button>
       </div>
 
-      <section className="flex bg-white p-4 flex-col h-full justify-between overflow-y-auto no-scrollbar">
+      <section className="flex bg-white p-4 flex-col h-screen justify-between overflow-y-auto no-scrollbar">
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
@@ -151,7 +143,7 @@ export default function AdditionalInformation() {
                     current Proof of Ownership Certificate.
                   </TypographySmall>
 
-                  {/* Show validation errors if any */}
+                  {/* Show validation errors if any
                   {Object.keys(errors).length > 0 && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 rounded">
                       <p className="text-red-700 font-semibold">Please fix the following errors:</p>
@@ -163,7 +155,7 @@ export default function AdditionalInformation() {
                         ))}
                       </ul>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Inputs Grid */}
                   <div className="grid grid-cols-1 gap-4">
@@ -177,9 +169,7 @@ export default function AdditionalInformation() {
                         onBlur={handleBlur}
                       >
                         <option value="">Select State</option>
-                        <option value="lagos">Lagos</option>
-                        <option value="abuja">Abuja</option>
-                        <option value="oyo">Oyo</option>
+                        <option value="Lagos">Lagos</option>
                       </select>
 
                       <select
@@ -189,12 +179,12 @@ export default function AdditionalInformation() {
                         value={values.lga}
                         onChange={handleChange}
                         onBlur={handleBlur}
+
                       >
                         <option value="">Select LGA</option>
-                        <option value="ikeja">Ikeja</option>
-                        <option value="lagos-island">Lagos Island</option>
-                        <option value="surulere">Surulere</option>
+                        {lgas.map((lga) => (<option key={lga.id} value={lga.id}>{lga.name}</option>))}
                       </select>
+
                     </div>
 
                     <div className="flex gap-4">

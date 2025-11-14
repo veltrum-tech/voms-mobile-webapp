@@ -16,9 +16,13 @@ import { useUploadMigrationCertificateMutation } from "../api";
 
 export default function UploadDocument() {
   const location = useLocation();
-  const { requestId, vin, vehicleInfo, additionalInfo } = location.state || {};
+  const { requestId, vin, vehicleInfo, additionalInfo, submissionResponse } = location.state || {};
 
   const [uploadCertificate, { isLoading: isUploading }] = useUploadMigrationCertificateMutation();
+
+  console.log("Upload Document - Request ID:", requestId);
+  console.log("Upload Document - Location State:", location.state);
+  console.log("Upload Document - Submission Response:", submissionResponse);
 
   const initialValues: DocumentUpload = {
     supportingDocument: null as unknown as File,
