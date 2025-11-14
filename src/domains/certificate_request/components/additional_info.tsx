@@ -77,6 +77,7 @@ export default function AdditionalInformation() {
     purpose: "",
     ownerName: "",
     ownerAddress: "",
+    make: "",
     model: "",
     engineNo: "",
     chassisNo: "",
@@ -256,9 +257,9 @@ export default function AdditionalInformation() {
                       />
                       <input
                         className="rounded-none border p-3 w-full"
-                        name="engineNo"
-                        placeholder="Enter Engine No."
-                        value={values.engineNo}
+                        name="make"
+                        placeholder="Enter Make"
+                        value={values.make}
                         onChange={handleChange}
                         onBlur={handleBlur}
                       />
@@ -275,9 +276,9 @@ export default function AdditionalInformation() {
                       />
                       <input
                         className="rounded-none border p-3 w-full"
-                        name="title"
-                        placeholder="Enter Title"
-                        value={values.title}
+                        name="engineNo"
+                        placeholder="Enter Engine No."
+                        value={values.engineNo}
                         onChange={handleChange}
                         onBlur={handleBlur}
                       />
@@ -292,6 +293,17 @@ export default function AdditionalInformation() {
                         onChange={handleChange}
                         onBlur={handleBlur}
                       />
+                      <input
+                        className="rounded-none border p-3 w-full"
+                        name="title"
+                        placeholder="Enter Title"
+                        value={values.title}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                    </div>
+
+                    <div className="flex gap-4">
                       <input
                         className="rounded-none border p-3 w-full"
                         name="email"

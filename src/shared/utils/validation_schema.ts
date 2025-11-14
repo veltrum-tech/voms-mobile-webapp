@@ -19,6 +19,7 @@ export const additionalInfoSchema = Yup.object().shape({
   issuedDate: Yup.date()
     .required("Issued date is required")
     .typeError("Invalid date"),
+    make: Yup.string().trim().required("Make is required"),
   plateNo: Yup.string().trim().required("Plate number is required"),
   purpose: Yup.string().trim().required("Purpose is required"),
   ownerName: Yup.string().trim().required("Owner name is required"),
