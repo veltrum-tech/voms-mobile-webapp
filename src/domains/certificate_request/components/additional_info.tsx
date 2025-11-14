@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   TypographyH5,
@@ -8,6 +8,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { additionalInfoSchema, type AdditionalInfo } from "../../../shared/utils";
+import { useSubmitMigrationInfoMutation } from "../api";
+import { lgas } from "../data";
 
 // Form values interface for handling string dates
 interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
@@ -16,28 +18,57 @@ interface AdditionalInfoForm extends Omit<AdditionalInfo, 'issuedDate'> {
 
 export default function AdditionalInformation() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { vin, vehicleInfo, requestId } = location.state || {};
+
+  const [submitMigrationInfo, { isLoading: isSubmittingInfo }] = useSubmitMigrationInfoMutation();
 
   const handleGoBack = () =>
     navigate("/app/certificate-request/vin-information");
 
-  const handleSubmit = (values: AdditionalInfoForm) => {
+  const handleSubmit = async (values: AdditionalInfoForm) => {
     try {
-      // Convert date string to Date object if needed
-      const submissionValues: AdditionalInfo = {
-        ...values,
-        issuedDate: new Date(values.issuedDate)
-      };
+      const result = await submitMigrationInfo({
+        requestId: requestId,
+        data: {
+          request_id: requestId,
+          state: values.state,
+          lga_id: values.lga, // This should be mapped to actual LGA ID
+          certificate_number: values.certificateNo,
+          issue_date: values.issuedDate,
+          plate_number: values.plateNo,
+          purpose: values.purpose,
+          owner_name: values.ownerName,
+          owner_address: values.ownerAddress,
+          engine_number: values.engineNo,
+          title: values.title,
+          telephone: values.phone,
+          email: values.email,
+        },
+      }).unwrap();
 
-      toast.success("Information saved successfully!");
-      console.log("Submitted Values:", submissionValues);
-      navigate("/app/certificate-request/upload-documents");
-    } catch (error) {
+      if (result.success) {
+        toast.success("Information saved successfully!");
+        console.log("Submitted Values:", result);
+        console.log("Full API Response:", result);
+
+        navigate("/app/certificate-request/upload-documents", {
+          state: {
+            requestId: requestId, // Use the original requestId, not from response
+            vin,
+            vehicleInfo,
+            additionalInfo: values,
+            submissionResponse: result // Pass the full response for reference
+          }
+        });
+      } else {
+        toast.error(result.message || "Failed to save information");
+      }
+    } catch (error: any) {
       console.error("Submission error:", error);
-      toast.error("Failed to save information. Please try again.");
+      toast.error(error?.data?.message || "Failed to save information. Please try again.");
     }
-  };
-
-  const initialValues: AdditionalInfoForm = {
+  }; const initialValues: AdditionalInfoForm = {
     state: "",
     lga: "",
     certificateNo: "",
@@ -55,7 +86,7 @@ export default function AdditionalInformation() {
   };
 
   return (
-    <main className="max-w-[720px] mx-auto h-full">
+    <main className="max-w-[720px] mx-auto h-screen">
       {/* Back Button */}
       <div className="">
         <Button
@@ -68,7 +99,7 @@ export default function AdditionalInformation() {
         </Button>
       </div>
 
-      <section className="flex bg-white p-4 flex-col h-full justify-between overflow-y-auto no-scrollbar">
+      <section className="flex bg-white p-4 flex-col h-screen justify-between overflow-y-auto no-scrollbar">
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
@@ -112,7 +143,7 @@ export default function AdditionalInformation() {
                     current Proof of Ownership Certificate.
                   </TypographySmall>
 
-                  {/* Show validation errors if any */}
+                  {/* Show validation errors if any
                   {Object.keys(errors).length > 0 && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 rounded">
                       <p className="text-red-700 font-semibold">Please fix the following errors:</p>
@@ -124,7 +155,7 @@ export default function AdditionalInformation() {
                         ))}
                       </ul>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Inputs Grid */}
                   <div className="grid grid-cols-1 gap-4">
@@ -138,9 +169,7 @@ export default function AdditionalInformation() {
                         onBlur={handleBlur}
                       >
                         <option value="">Select State</option>
-                        <option value="lagos">Lagos</option>
-                        <option value="abuja">Abuja</option>
-                        <option value="oyo">Oyo</option>
+                        <option value="Lagos">Lagos</option>
                       </select>
 
                       <select
@@ -150,12 +179,12 @@ export default function AdditionalInformation() {
                         value={values.lga}
                         onChange={handleChange}
                         onBlur={handleBlur}
+
                       >
                         <option value="">Select LGA</option>
-                        <option value="ikeja">Ikeja</option>
-                        <option value="lagos-island">Lagos Island</option>
-                        <option value="surulere">Surulere</option>
+                        {lgas.map((lga) => (<option key={lga.id} value={lga.id}>{lga.name}</option>))}
                       </select>
+
                     </div>
 
                     <div className="flex gap-4">
@@ -280,13 +309,13 @@ export default function AdditionalInformation() {
                 <div className="flex mt-10">
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isSubmittingInfo}
                     className="w-full mb-4 md:w-xl rounded-sm"
                     onClick={() => {
                       console.log("Submit button clicked!", { isSubmitting, isValid, errors });
                     }}
                   >
-                    {isSubmitting ? "Saving..." : "Continue"}
+                    {isSubmitting || isSubmittingInfo ? "Saving..." : "Continue"}
                   </Button>
                 </div>
               </Form>

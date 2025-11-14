@@ -1,19 +1,37 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, TypographyH5 } from "../../../shared/components";
+import { Button, TypographyH5, TypographySmall } from "../../../shared/components";
 import { IoIosArrowBack } from "react-icons/io";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { vehicleData } from "../data";
 
 export default function VinInformation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { vin } = location.state || {};
+  const { vin, vehicleInfo, fullResponse } = location.state || {};
+
+  // Extract vehicle info from the response structure
+  const displayVehicleInfo = vehicleInfo || fullResponse?.vehicleInfo || {};
+  const displayVin = vin || fullResponse?.vin || 'N/A';
+
+  console.log("=== VIN INFO DEBUG ===");
+  console.log("Full location.state:", location.state);
+  console.log("Display VIN:", displayVin);
+  console.log("Display Vehicle Info:", displayVehicleInfo);
+  console.log("Full Response:", fullResponse);
+  console.log("====================");
 
   const [checkboxes, setCheckboxes] = useState({
     correctVehicle: false,
     isOwner: false,
   });
+
+  // Redirect back if no VIN data is available
+  useEffect(() => {
+    if (!displayVin || displayVin === 'N/A') {
+      toast.error("No VIN information available");
+      navigate("/app/certificate-request/enter-vin");
+    }
+  }, [displayVin, navigate]);
 
   const handleGoBack = () => {
     navigate("/app/certificate-request/enter-vin");
@@ -31,8 +49,15 @@ export default function VinInformation() {
       toast.error("Please confirm both statements to continue");
       return;
     }
-    // Navigate to next step
-    navigate("/app/certificate-request/addtional-information", { state: { vin } });
+    // Navigate to next step with requestId from the API response
+    navigate("/app/certificate-request/addtional-information", {
+      state: {
+        vin: displayVin,
+        vehicleInfo: displayVehicleInfo,
+        fullResponse,
+        requestId: fullResponse?.requestId // Pass the UUID requestId
+      }
+    });
     toast.success("Information confirmed!");
   };
 
@@ -50,41 +75,105 @@ export default function VinInformation() {
         </Button>
       </div>
 
-      <div className="bg-white p-4 h-full space-y-6">
+      <div className="bg-white p-4 min-h-screen space-y-6">
         {/* Content */}
         <div className="grow">
           {/* Section Header */}
-          <div className="flex items-center gap-3 mt-6 mb-6">
+          <div className="flex items-center gap-3 mt-6 mb-3">
             <div className="bg-[#8D8989] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
               3
             </div>
-            <TypographyH5 className="">
+            <TypographyH5 className="text-lg md:text-xl font-semibold text-gray-900">
               VIN INFORMATION
             </TypographyH5>
           </div>
 
-          {/* Vehicle Information */}
-          <div className="space-y-2 mb-8">
-            <p className="text-gray-700">
-              <span className="font-medium">VIN - </span>
-              {vehicleData.vin}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-medium">Year - </span>
-              {vehicleData.year}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-medium">Make - </span>
-              {vehicleData.make}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-medium">Model - </span>
-              {vehicleData.model}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-medium">Type - </span>
-              {vehicleData.type}
-            </p>
+          <TypographySmall className="text-gray-600 text-sm mb-6">
+            Please verify the vehicle information below is correct
+          </TypographySmall>
+
+          {/* Success Message if available */}
+          {fullResponse?.success && (
+            <div className="bg-green-50 border border-green-200 rounded-sm p-3 mb-4">
+              <p className="text-green-800 text-sm font-semibold">✓ VIN Verified Successfully</p>
+              {fullResponse?.message && (
+                <p className="text-green-700 text-xs mt-1">{fullResponse.message}</p>
+              )}
+            </div>
+          )}
+
+          {/* Request ID Display */}
+          {fullResponse?.requestId && (
+            <div className="bg-blue-50 border border-blue-200 rounded-sm p-3 mb-4">
+              <p className="text-blue-800 text-sm">
+                <span className="font-semibold">Request ID:</span> {fullResponse.requestId}
+              </p>
+            </div>
+          )}          {/* Vehicle Information Card */}
+          <div className="bg-gray-50 border border-gray-200 rounded-sm p-4 mb-8">
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                <span className="font-semibold text-gray-700 w-32">VIN:</span>
+                <span className="text-gray-900 break-all">{displayVin}</span>
+              </div>
+
+              {displayVehicleInfo?.make && (
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                  <span className="font-semibold text-gray-700 w-32">Make:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.make}</span>
+                </div>
+              )}
+
+              {displayVehicleInfo?.model && (
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                  <span className="font-semibold text-gray-700 w-32">Model:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.model}</span>
+                </div>
+              )}
+
+              {displayVehicleInfo?.year && (
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                  <span className="font-semibold text-gray-700 w-32">Year:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.year}</span>
+                </div>
+              )}
+
+              {displayVehicleInfo?.color && (
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                  <span className="font-semibold text-gray-700 w-32">Color:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.color}</span>
+                </div>
+              )}
+
+              {displayVehicleInfo?.vehicle_type && (
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-200 pb-2">
+                  <span className="font-semibold text-gray-700 w-32">Vehicle Type:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.vehicle_type}</span>
+                </div>
+              )}
+
+              {displayVehicleInfo?.type && (
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="font-semibold text-gray-700 w-32">Type:</span>
+                  <span className="text-gray-900">{displayVehicleInfo.type}</span>
+                </div>
+              )}
+
+              {/* Display any additional fields from the API response */}
+              {displayVehicleInfo && Object.keys(displayVehicleInfo).map((key) => {
+                if (!['year', 'make', 'model', 'type', 'color', 'vehicle_type'].includes(key) && displayVehicleInfo[key]) {
+                  return (
+                    <div key={key} className="flex flex-col sm:flex-row sm:items-center border-t border-gray-200 pt-2">
+                      <span className="font-semibold text-gray-700 w-32 capitalize">
+                        {key.replace(/_/g, ' ')}:
+                      </span>
+                      <span className="text-gray-900">{displayVehicleInfo[key]}</span>
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </div>
           </div>
 
           {/* Confirmation Checkboxes */}

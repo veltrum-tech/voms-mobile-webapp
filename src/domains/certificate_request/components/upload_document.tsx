@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   FileUpload,
@@ -12,8 +12,18 @@ import {
   documentUploadSchema,
   type DocumentUpload,
 } from "../../../shared/utils";
+import { useUploadMigrationCertificateMutation } from "../api";
 
 export default function UploadDocument() {
+  const location = useLocation();
+  const { requestId, vin, vehicleInfo, additionalInfo, submissionResponse } = location.state || {};
+
+  const [uploadCertificate, { isLoading: isUploading }] = useUploadMigrationCertificateMutation();
+
+  console.log("Upload Document - Request ID:", requestId);
+  console.log("Upload Document - Location State:", location.state);
+  console.log("Upload Document - Submission Response:", submissionResponse);
+
   const initialValues: DocumentUpload = {
     supportingDocument: null as unknown as File,
   };
@@ -23,10 +33,41 @@ export default function UploadDocument() {
   const handleGoBack = () =>
     navigate("/app/certificate-request/addtional-information");
 
-  const handleSubmit = (values: DocumentUpload) => {
-    toast.success("Document uploaded successfully!");
-    console.log("Uploaded file:", values.supportingDocument);
-    navigate("/app/certificate-request/information-summary");
+  const handleSubmit = async (values: DocumentUpload) => {
+    if (!requestId) {
+      toast.error("Request ID not found. Please start from the beginning.");
+      navigate("/app/certificate-request/enter-vin");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('certificate', values.supportingDocument);
+
+      const result = await uploadCertificate({
+        requestId,
+        file: formData,
+      }).unwrap();
+
+      if (result.success) {
+        toast.success("Document uploaded successfully!");
+        console.log("Upload result:", result);
+        navigate("/app/certificate-request/information-summary", {
+          state: {
+            requestId,
+            vin,
+            vehicleInfo,
+            additionalInfo,
+            uploadedFile: result.data?.file_url
+          }
+        });
+      } else {
+        toast.error(result.message || "Failed to upload document");
+      }
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error?.data?.message || "Failed to upload document. Please try again.");
+    }
   };
 
   return (
@@ -90,10 +131,10 @@ export default function UploadDocument() {
               <div className="fixed bottom-0 left-0 w-full px-4 py-3 bg-white md:relative md:mb-6 md:px-0 md:py-0">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="w-full md:w-xl rounded-sm"
                 >
-                  {isSubmitting ? "Uploading..." : "Continue"}
+                  {isSubmitting || isUploading ? "Uploading..." : "Continue"}
                 </Button>
               </div>
             </Form>

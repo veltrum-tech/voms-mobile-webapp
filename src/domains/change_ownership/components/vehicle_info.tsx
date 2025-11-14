@@ -3,12 +3,17 @@ import { Button, TypographyH5, TypographySmall } from "../../../shared/component
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from "react";
 import { toast } from "sonner";
-import { certData } from "../data";
 
 export default function VehicleInformation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { vin } = location.state || {};
+  const { certificateNo, requestId, currentOwner, vehicleInfo, fullResponse } = location.state || {};
+
+  // Extract vehicle info and owner info from response
+  const displayVehicleInfo = vehicleInfo || fullResponse?.vehicleInfo || {};
+  const ownerInfo = currentOwner || fullResponse?.currentOwner || {};
+  const transferRequestId = requestId || fullResponse?.requestId;
+  const certificateNumber = certificateNo || 'N/A';
 
   const [checkboxes, setCheckboxes] = useState({
     correctVehicle: false,
@@ -31,8 +36,15 @@ export default function VehicleInformation() {
       toast.error("Please confirm both statements to continue");
       return;
     }
-    // Navigate to next step
-    navigate("/app/change-ownership/next-owner-info", { state: { vin } });
+    // Navigate to next step - pass the requestId from the API response
+    navigate("/app/change-ownership/next-owner-info", {
+      state: {
+        certificateNo: certificateNumber,
+        vehicleInfo: displayVehicleInfo,
+        currentOwner: ownerInfo,
+        requestId: transferRequestId
+      }
+    });
     toast.success("Information confirmed!");
   };
 
@@ -69,64 +81,67 @@ export default function VehicleInformation() {
             {/* Certificate No - Full Width */}
             <div className="mb-3 flex gap-1 items-center pb-3">
               <TypographySmall className="text-black">Certificate No</TypographySmall>-
-              <TypographySmall className="text-black">{certData.certificateNo}</TypographySmall>
+              <TypographySmall className="text-black font-semibold">{certificateNumber}</TypographySmall>
             </div>
 
             {/* Two Column Grid */}
             <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3">
               <div className="flex gap-1 items-center">
-                <TypographySmall>Issue Date</TypographySmall>-
-                <TypographySmall>{certData.issueDate}</TypographySmall>
-              </div>
-              <div className="flex gap-1 items-center">
-                <TypographySmall>Plate No</TypographySmall>-
-                <TypographySmall>{certData.plateNo}</TypographySmall>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3">
-              <div className="flex gap-1 items-center">
-                <TypographySmall>Owner</TypographySmall>-
-                <TypographySmall>{certData.owner}</TypographySmall>
+                <TypographySmall>Make</TypographySmall>-
+                <TypographySmall className="font-medium">{displayVehicleInfo?.make || 'N/A'}</TypographySmall>
               </div>
               <div className="flex gap-1 items-center">
                 <TypographySmall>Model</TypographySmall>-
-                <TypographySmall>{certData.model}</TypographySmall>
+                <TypographySmall className="font-medium">{displayVehicleInfo?.model || 'N/A'}</TypographySmall>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3">
               <div className="flex gap-1 items-center">
-                <TypographySmall>Engine No</TypographySmall>-
-                <TypographySmall>{certData.engineNo}</TypographySmall>
+                <TypographySmall>Year</TypographySmall>-
+                <TypographySmall className="font-medium">{displayVehicleInfo?.year || 'N/A'}</TypographySmall>
               </div>
               <div className="flex gap-1 items-center">
-                <TypographySmall>Chassis No</TypographySmall>-
-                <TypographySmall>{certData.chassisNo}</TypographySmall>
+                <TypographySmall>Color</TypographySmall>-
+                <TypographySmall className="font-medium">{displayVehicleInfo?.color || 'N/A'}</TypographySmall>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3">
+              <div className="flex gap-1 items-center">
+                <TypographySmall>Plate No</TypographySmall>-
+                <TypographySmall className="font-medium">{displayVehicleInfo?.plate_number || 'N/A'}</TypographySmall>
+              </div>
               <div className="flex gap-1 items-center">
                 <TypographySmall>VIN</TypographySmall>-
-                <TypographySmall>{certData.vin}</TypographySmall>
-              </div>
-              <div className="flex gap-1 items-center">
-                <TypographySmall>Title</TypographySmall>-
-                <TypographySmall>{certData.title}</TypographySmall>
+                <TypographySmall className="font-medium">{displayVehicleInfo?.vin || 'N/A'}</TypographySmall>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-              <div className="flex gap-1 items-center">
-                <TypographySmall>Telephone No</TypographySmall>-
-                <TypographySmall>{certData.telephoneNo}</TypographySmall>
-              </div>
-              <div className="flex gap-1 items-center">
-                <TypographySmall>Email</TypographySmall>-
-                <TypographySmall className="text-sm font-medium text-gray-900 break-all">{certData.email}</TypographySmall>
-              </div>
-            </div>
+            {/* Current Owner Information */}
+            {ownerInfo && Object.keys(ownerInfo).length > 0 && (
+              <>
+                <div className="border-t pt-3 mt-4 mb-3">
+                  <TypographySmall className="text-black font-semibold">Current Owner</TypographySmall>
+                </div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3">
+                  <div className="flex gap-1 items-center">
+                    <TypographySmall>Name</TypographySmall>-
+                    <TypographySmall className="font-medium">{ownerInfo?.name || 'N/A'}</TypographySmall>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <TypographySmall>Phone</TypographySmall>-
+                    <TypographySmall className="font-medium">{ownerInfo?.phone || 'N/A'}</TypographySmall>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  <div className="flex gap-1 items-center col-span-2">
+                    <TypographySmall>Email</TypographySmall>-
+                    <TypographySmall className="font-medium break-all">{ownerInfo?.email || 'N/A'}</TypographySmall>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Confirmation Checkboxes */}

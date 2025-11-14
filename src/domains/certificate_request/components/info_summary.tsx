@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   TypographyH5,
@@ -7,11 +7,15 @@ import {
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from "react";
 import { toast } from "sonner";
-import { additionalInfo, vehicleData } from "../data";
+import { useInitiateMigrationPaymentMutation } from "../api";
 
 export default function InformationSummary() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { requestId, vin, vehicleInfo, additionalInfo } = location.state || {};
+
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [initiatePayment, { isLoading: isInitiatingPayment }] = useInitiateMigrationPaymentMutation();
 
   const handleGoBack = () => {
     navigate("/app/certificate-request/addtional-information");
@@ -21,22 +25,42 @@ export default function InformationSummary() {
     setIsConfirmed((prev) => !prev);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!isConfirmed) {
       toast.error("Please confirm the information to proceed");
       return;
     }
-    toast.success("Information confirmed!");
-    // Navigate to next step if any
-    navigate("/app/certificate-request/upload-documents", {
-      state: { vehicleData, additionalInfo },
-    });
+
+    if (!requestId) {
+      toast.error("Request ID not found. Please start from the beginning.");
+      navigate("/app/certificate-request/enter-vin");
+      return;
+    }
+
+    try {
+      const result = await initiatePayment({
+        requestId,
+        data: {
+          request_id: requestId,
+          amount: 5000,
+        },
+      }).unwrap();
+
+      if (result.success === true) {
+        toast.success("Redirecting to payment...");
+        // Redirect to payment gateway
+        window.location.href = result.paymentUrl;
+      } 
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      toast.error(error?.data?.message || "Failed to initiate payment. Please try again.");
+    }
   };
 
   return (
     <div className="max-w-[720px] mx-auto flex flex-col min-h-full">
       {/* Back Button */}
-      <div className="max-w-[720px] mx-auto fixed top-10 -left-4 z-50">
+      <div className="">
         <Button
           onClick={handleGoBack}
           variant="icon"
@@ -47,7 +71,7 @@ export default function InformationSummary() {
         </Button>
       </div>
 
-      <section className="grow">
+      <section className="grow bg-white p-4 pt-20 md:pt-24 flex flex-col">
         {/* Page Header */}
         <div className="flex items-center my-6 gap-3">
           <div className="bg-[#8D8989] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
@@ -65,19 +89,19 @@ export default function InformationSummary() {
               VIN Information
             </TypographySmall>
             <p>
-              <span className="font-medium">VIN:</span> {vehicleData.vin}
+              <span className="font-medium">VIN:</span> {vin || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Year:</span> {vehicleData.year}
+              <span className="font-medium">Year:</span> {vehicleInfo?.year || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Make:</span> {vehicleData.make}
+              <span className="font-medium">Make:</span> {vehicleInfo?.make || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Model:</span> {vehicleData.model}
+              <span className="font-medium">Model:</span> {vehicleInfo?.model || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Type:</span> {vehicleData.type}
+              <span className="font-medium">Type:</span> {vehicleInfo?.type || 'N/A'}
             </p>
           </div>
 
@@ -87,54 +111,46 @@ export default function InformationSummary() {
               Additional Information
             </TypographySmall>
             <p>
-              <span className="font-medium">State:</span> {additionalInfo.state}
+              <span className="font-medium">State:</span> {additionalInfo?.state || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">LGA:</span> {additionalInfo.lga}
+              <span className="font-medium">LGA:</span> {additionalInfo?.lga || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Certificate No:</span>
-              {additionalInfo.certificateNo}
+              <span className="font-medium">Certificate No:</span> {additionalInfo?.certificateNo || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Issued Date:</span>
-              {additionalInfo.issuedDate}
+              <span className="font-medium">Issued Date:</span> {additionalInfo?.issuedDate || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Plate No:</span>
-              {additionalInfo.plateNo}
+              <span className="font-medium">Plate No:</span> {additionalInfo?.plateNo || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Purpose:</span>
-              {additionalInfo.purpose}
+              <span className="font-medium">Purpose:</span> {additionalInfo?.purpose || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Owner Name:</span>
-              {additionalInfo.ownerName}
+              <span className="font-medium">Owner Name:</span> {additionalInfo?.ownerName || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Owner Address:</span>
-              {additionalInfo.ownerAddress}
+              <span className="font-medium">Owner Address:</span> {additionalInfo?.ownerAddress || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Model:</span> {additionalInfo.model}
+              <span className="font-medium">Model:</span> {additionalInfo?.model || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Engine No:</span>
-              {additionalInfo.engineNo}
+              <span className="font-medium">Engine No:</span> {additionalInfo?.engineNo || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Chassis No:</span>
-              {additionalInfo.chassisNo}
+              <span className="font-medium">Chassis No:</span> {additionalInfo?.chassisNo || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Title:</span> {additionalInfo.title}
+              <span className="font-medium">Title:</span> {additionalInfo?.title || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Phone:</span> {additionalInfo.phone}
+              <span className="font-medium">Phone:</span> {additionalInfo?.phone || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Email:</span> {additionalInfo.email}
+              <span className="font-medium">Email:</span> {additionalInfo?.email || 'N/A'}
             </p>
           </div>
         </div>
@@ -173,9 +189,9 @@ export default function InformationSummary() {
           <Button
             onClick={handleConfirm}
             className="w-full md:w-xl rounded-sm"
-            disabled={!isConfirmed}
+            disabled={!isConfirmed || isInitiatingPayment}
           >
-            Continue
+            {isInitiatingPayment ? "Processing..." : "Proceed to Payment"}
           </Button>
         </div>
       </section>

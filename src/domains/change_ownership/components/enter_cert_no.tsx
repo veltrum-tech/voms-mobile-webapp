@@ -4,18 +4,39 @@ import { IoIosArrowBack } from "react-icons/io";
 import { toast } from "sonner";
 import { Formik, Form } from "formik";
 import { certificateValidationSchema, type CertificateValidation } from "../../../shared/utils";
+import { useVerifyCertificateMutation } from "../../certificate_request/api";
 
 export default function EnterCertNo() {
   const navigate = useNavigate();
+  const [verifyCertificate, { isLoading }] = useVerifyCertificateMutation();
 
   const handleGoBack = () => {
     navigate("/select-option");
   };
 
-  const handleSubmit = (values: CertificateValidation) => {
-    toast.success("VIN validated successfully!");
-    console.log("Submitted VIN:", values.certificateNo);
-    navigate("/app/change-ownership/vehicle-information");
+  const handleSubmit = async (values: CertificateValidation) => {
+    try {
+      const result = await verifyCertificate({
+        certificate_number: values.certificateNo
+      }).unwrap();
+
+      if (result.success === true) {
+        toast.success("Certificate validated successfully!");
+        console.log("Certificate verified:", result);
+        navigate("/app/change-ownership/vehicle-information", {
+          state: {
+            certificateNo: values.certificateNo,
+            requestId: result.requestId,
+            currentOwner: result.currentOwner,
+            vehicleInfo: result.vehicleInfo,
+            fullResponse: result
+          }
+        });
+      }
+    } catch (error: any) {
+      console.error("Certificate verification error:", error);
+      toast.error(error?.data?.message || "Failed to verify certificate. Please try again.");
+    }
   };
 
   return (
@@ -34,7 +55,7 @@ export default function EnterCertNo() {
 
       <section className="bg-white p-4 flex flex-col min-h-full justify-between">
         <Formik
-          initialValues={{  certificateNo: "" }}
+          initialValues={{ certificateNo: "" }}
           validationSchema={certificateValidationSchema}
           onSubmit={handleSubmit}
         >
@@ -46,7 +67,7 @@ export default function EnterCertNo() {
                     2
                   </div>
                   <TypographyH5 className="text-lg md:text-xl font-semibold text-gray-900">
-                   ENTER CERTIFICATE NO.
+                    ENTER CERTIFICATE NO.
                   </TypographyH5>
                 </div>
 
@@ -68,10 +89,10 @@ export default function EnterCertNo() {
               <div className="flex">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                   className="text-white w-full md:w-xl rounded-sm transition"
                 >
-                  {isSubmitting ? "Validating..." : "Validate Certificate No."}
+                  {isSubmitting || isLoading ? "Validating..." : "Validate Certificate No."}
                 </Button>
               </div>
             </Form>
