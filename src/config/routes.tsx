@@ -19,6 +19,7 @@ import EnterCertNo from "../domains/change_ownership/components/enter_cert_no";
 import VehicleInformation from "../domains/change_ownership/components/vehicle_info";
 import NextOwnerInformation from "../domains/change_ownership/components/next_owner_info";
 import ReviewInformation from "../domains/change_ownership/components/review_info";
+import VerifyOtp from "../domains/change_ownership/components/verify_otp";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
           { path: "vehicle-information", element: <VehicleInformation /> },
           { path: "next-owner-info", element: <NextOwnerInformation /> },
           { path: "review-information", element: <ReviewInformation /> },
+          { path: "verify-otp", element: <VerifyOtp /> },
         ],
       },
     ],

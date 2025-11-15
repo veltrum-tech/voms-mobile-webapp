@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   FieldInput,
@@ -12,17 +12,62 @@ import {
   nextOwnerInfoSchema,
   type NextOwnerInfo,
 } from "../../../shared/utils";
+import { useSubmitTransferInfoMutation } from "../../certificate_request/api";
 
 export default function NextOwnerInformation() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { certificateNo, vehicleInfo, currentOwner, requestId } = location.state || {};
+
+  const [submitTransferInfo, { isLoading }] = useSubmitTransferInfoMutation();
+
+  console.log("Next Owner Info - Request ID:", requestId);
+  console.log("Next Owner Info - Location State:", location.state);
 
   const handleGoBack = () =>
     navigate("/app/change-ownership/vehicle-information");
 
-  const handleSubmit = (values: NextOwnerInfo) => {
-    toast.success("Information saved successfully!");
-    console.log("Submitted Values:", values);
-    navigate("/app/change-ownership/review-information");
+  const handleSubmit = async (values: NextOwnerInfo) => {
+    if (!requestId) {
+      toast.error("Request ID not found. Please start from the beginning.");
+      navigate("/app/change-ownership/enter-cert-no");
+      return;
+    }
+
+    try {
+      const result = await submitTransferInfo({
+        requestId,
+        data: {
+          request_id: requestId,
+          new_owner_name: values.ownerName,
+          new_owner_address: values.ownerAddress,
+          new_owner_phone: values.phone,
+          new_owner_email: values.email,
+        },
+      }).unwrap();
+
+      console.log("Transfer submission result:", result);
+
+      if (result.success) {
+        toast.success(result.message || "Transfer information submitted successfully!");
+        navigate("/app/change-ownership/review-information", {
+          state: {
+            certificateNo,
+            vehicleInfo,
+            currentOwner,
+            requestId,
+            nextOwnerInfo: values,
+            transferResponse: result,
+          },
+        });
+      } else {
+        toast.error(result.message || "Failed to submit transfer information");
+      }
+    } catch (error: any) {
+      console.error("Transfer submission error:", error);
+      const errorMessage = error?.data?.message || error?.message || "Failed to submit transfer information. Please try again.";
+      toast.error(errorMessage);
+    }
   };
 
   const initialValues: NextOwnerInfo = {
@@ -106,10 +151,10 @@ export default function NextOwnerInformation() {
               <div className="flex mt-10">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                   className="w-full mb-4 md:w-xl rounded-sm "
                 >
-                  {isSubmitting ? "Saving..." : "Continue"}
+                  {isSubmitting || isLoading ? "Submitting..." : "Continue"}
                 </Button>
               </div>
             </Form>
