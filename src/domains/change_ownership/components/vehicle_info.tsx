@@ -3,6 +3,7 @@ import { Button, TypographyH5, TypographySmall } from "../../../shared/component
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSendTransferOtpMutation } from "../../certificate_request/api";
 
 export default function VehicleInformation() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function VehicleInformation() {
   const ownerInfo = currentOwner || fullResponse?.currentOwner || {};
   const transferRequestId = requestId || fullResponse?.requestId;
   const certificateNumber = certificateNo || 'N/A';
+
+  const [sendTransferOtp, { isLoading: isSendingOtp }] = useSendTransferOtpMutation();
 
   const [checkboxes, setCheckboxes] = useState({
     correctVehicle: false,
@@ -31,21 +34,50 @@ export default function VehicleInformation() {
     }));
   };
 
-  const handleContinue = () => {
-    if (!checkboxes.correctVehicle || !checkboxes.isOwner) {
-      toast.error("Please confirm both statements to continue");
+  const handleSendOtp = async (method: 'email' | 'sms') => {
+    if (!checkboxes.correctVehicle) {
+      toast.error("Please confirm the vehicle information to continue");
       return;
     }
-    // Navigate to next step - pass the requestId from the API response
-    navigate("/app/change-ownership/next-owner-info", {
-      state: {
-        certificateNo: certificateNumber,
-        vehicleInfo: displayVehicleInfo,
-        currentOwner: ownerInfo,
-        requestId: transferRequestId
+
+    if (!transferRequestId) {
+      toast.error("Request ID not found. Please start from the beginning.");
+      navigate("/app/change-ownership/enter-cert-no");
+      return;
+    }
+
+    try {
+      const result = await sendTransferOtp({
+        requestId: transferRequestId,
+        data: {
+          request_id: transferRequestId,
+          method: method,
+        },
+      }).unwrap();
+
+      console.log(`OTP sent via ${method}:`, result);
+
+      if (result.success) {
+        toast.success(result.message || `OTP sent successfully to current owner's ${method}!`);
+        // Navigate to OTP verification page
+        navigate("/app/change-ownership/verify-otp", {
+          state: {
+            certificateNo: certificateNumber,
+            vehicleInfo: displayVehicleInfo,
+            currentOwner: ownerInfo,
+            requestId: transferRequestId,
+            otpMethod: method,
+            otpSendResponse: result
+          }
+        });
+      } else {
+        toast.error(result.message || `Failed to send OTP via ${method}`);
       }
-    });
-    toast.success("Information confirmed!");
+    } catch (error: any) {
+      console.error(`Error sending OTP via ${method}:`, error);
+      const errorMessage = error?.data?.message || error?.message || `Failed to send OTP via ${method}. Please try again.`;
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -176,49 +208,34 @@ export default function VehicleInformation() {
                 This is the correct vehicle and certificate to be processed.
               </label>
             </div>
-
-            {/* Checkbox 2 */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => handleCheckboxChange("isOwner")}
-                className="shrink-0 w-6 h-6 rounded border-2 border-primary-600 flex items-center justify-center cursor-pointer mt-0.5"
-                style={{
-                  backgroundColor: checkboxes.isOwner ? "#B41662" : "white",
-                }}
-              >
-                {checkboxes.isOwner && (
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M5 13l4 4L19 7"></path>
-                  </svg>
-                )}
-              </button>
-              <label
-                onClick={() => handleCheckboxChange("isOwner")}
-                className="text-sm text-black cursor-pointer"
-              >
-                I am the owner of this vehicle or representative of the owner.
-              </label>
-            </div>
           </div>
         </div>
 
-        {/* Continue Button */}
-        <div className="shrink-0 pb-6 pt-6">
-          <Button
-            onClick={handleContinue}
-            className="text-white w-full md:w-xl rounded-sm transition"
-            disabled={!checkboxes.correctVehicle || !checkboxes.isOwner}
-          >
-            Continue
-          </Button>
+        {/* OTP Buttons */}
+        <div className="shrink-0 pb-6 pt-6 space-y-4">
+          <TypographySmall className="font-semibold text-gray-900">
+            Send OTP to Current Owner:
+          </TypographySmall>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Send OTP via Email Button */}
+            <Button
+              onClick={() => handleSendOtp('email')}
+              disabled={!checkboxes.correctVehicle || isSendingOtp}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-sm transition"
+            >
+              {isSendingOtp ? "Sending..." : "Send OTP via Email"}
+            </Button>
+
+            {/* Send OTP via SMS Button */}
+            {/* <Button
+              onClick={() => handleSendOtp('sms')}
+              disabled={!checkboxes.correctVehicle || isSendingOtp}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-sm transition"
+            >
+              {isSendingOtp ? "Sending..." : "Send OTP via SMS"}
+            </Button> */}
+          </div>
         </div>
       </div>
     </div>
